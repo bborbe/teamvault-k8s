@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: teamvault
-  namespace: 'teamvault'
+  namespace: '{{ "NAMESPACE" | env }}'
 spec:
   ingressClassName: 'traefik'
   rules:

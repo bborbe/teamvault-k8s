@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: teamvault
-  namespace: 'teamvault'
+  namespace: '{{ "NAMESPACE" | env }}'
 spec:
   replicas: 1
   selector:
