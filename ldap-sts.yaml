@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ldap
+  namespace: 'teamvault'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ldap
+  serviceName: ldap
+  template:
+    metadata:
+      labels:
+        app: ldap
+    spec:
+      containers:
+        - name: service
+          env:
+            - name: DISABLE_CHOWN
+              value: 'true'
+            - name: LDAP_SUFFIX
+              value: 'dc=benjamin-borbe,dc=de'
+            - name: LDAP_ROOTDN
+              value: 'cn=root,dc=benjamin-borbe,dc=de'
+            - name: LDAP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: ldap-secret
+                  name: ldap
+          image: '{{"DOCKER_REGISTRY" | env}}/openldap:{{"LDAP_VERSION" | env}}'
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 389
+              name: ldap
+            - containerPort: 636
+              name: ldaps
+          resources:
+            limits:
+              cpu: 500m
+              memory: 75Mi
+            requests:
+              cpu: 20m
+              memory: 20Mi
+          volumeMounts:
+            - mountPath: /var/lib/openldap/openldap-data
+              name: datadir
+      imagePullSecrets:
+        - name: docker
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+    - metadata:
+        name: datadir
+      spec:
+        storageClassName: local-path-ssd
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi

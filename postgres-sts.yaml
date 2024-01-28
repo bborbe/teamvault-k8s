@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: 'teamvault'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  serviceName: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      securityContext:
+        runAsUser: 20002
+        runAsGroup: 20002
+        fsGroup: 20002
+      containers:
+        - name: service
+          args:
+            - -c
+            - max_connections=1000
+          env:
+            - name: PGDATA
+              value: '/var/lib/postgresql/data/pgdata'
+            - name: POSTGRES_INITDB_ARGS
+              value: '--encoding=UTF8 --lc-collate=en_US.UTF-8 --lc-ctype=en_US.UTF-8 -T template0'
+            - name: POSTGRES_DB
+              value: 'teamvault'
+            - name: POSTGRES_USER
+              value: 'teamvault'
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: postgres-password
+                  name: postgres
+          image: '{{"DOCKER_REGISTRY" | env}}/postgres:{{"POSTGRES_VERSION" | env}}'
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5432
+              name: postgres
+          resources:
+            limits:
+              cpu: 500m
+              memory: 200Mi
+            requests:
+              cpu: 20m
+              memory: 50Mi
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: datadir
+      imagePullSecrets:
+        - name: docker
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+    - metadata:
+        name: datadir
+      spec:
+        storageClassName: local-path-ssd
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi

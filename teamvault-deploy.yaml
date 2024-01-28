@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: teamvault
+  namespace: 'teamvault'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: teamvault
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: teamvault
+    spec:
+      containers:
+        - name: service
+          env:
+            - name: DEBUG
+              value: 'false'
+            - name: EMAIL_ENABLED
+              value: 'true'
+            - name: EMAIL_USER
+              value: ''
+            - name: EMAIL_PORT
+              value: '25'
+            - name: EMAIL_HOST
+              value: ''
+            - name: EMAIL_PASSWORD
+              value: ''
+            - name: EMAIL_USE_SSL
+              value: 'False'
+            - name: EMAIL_USE_TLS
+              value: 'False'
+            - name: LDAP_USER_BASE_DN
+              value: 'ou=users,dc=benjamin-borbe,dc=de'
+            - name: LDAP_GROUP_BASE_DN
+              value: 'ou=groups,dc=benjamin-borbe,dc=de'
+            - name: LDAP_GROUP_SEARCH_FILTER
+              value: '(objectClass=groupOfNames)'
+            - name: BASE_URL
+              value: 'https://teamvault.benjamin-borbe.de'
+            - name: DATABASE_NAME
+              value: 'teamvault'
+            - name: DATABASE_HOST
+              value: 'postgres'
+            - name: DATABASE_USER
+              value: 'teamvault'
+            - name: DATABASE_PORT
+              value: '5432'
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: postgres-password
+                  name: teamvault
+            - name: LDAP_ENABLED
+              value: 'true'
+            - name: LDAP_SERVER_URI
+              value: 'ldap://ldap'
+            - name: LDAP_REQUIRE_GROUP
+              value: 'ou=employees,ou=groups,dc=benjamin-borbe,dc=de'
+            - name: LDAP_ATTR_FIRST_NAME
+              value: 'givenName'
+            - name: LDAP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: ldap-secret
+                  name: teamvault
+            - name: LDAP_USER_SEARCH_FILTER
+              value: '(uid=%%(user)s)'
+            - name: LDAP_ADMIN_GROUP
+              value: 'ou=admins,ou=groups,dc=benjamin-borbe,dc=de'
+            - name: LDAP_BIND_DN
+              value: 'cn=root,dc=benjamin-borbe,dc=de'
+            - name: LDAP_ATTR_LAST_NAME
+              value: 'sn'
+            - name: LDAP_ATTR_EMAIL
+              value: 'mail'
+            - name: LDAP_CACHE_TIMEOUT
+              value: '60'
+            - name: SECURE_SSL_REDIRECT
+              value: 'true'
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: secret-key
+                  name: teamvault
+            - name: FERNET_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: fernet-key
+                  name: teamvault
+            - name: SALT
+              valueFrom:
+                secretKeyRef:
+                  key: salt
+                  name: teamvault
+          image: '{{"DOCKER_REGISTRY" | env}}/teamvault:{{"TEAMVAULT_VERSION" | env}}'
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+              name: http
+          resources:
+            limits:
+              cpu: 500m
+              memory: 400Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+      imagePullSecrets:
+        - name: docker
