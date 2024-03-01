@@ -14,6 +14,15 @@ spec:
       labels:
         app: ldap
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - fire-k3s-master
       containers:
         - name: service
           env:
@@ -53,7 +62,7 @@ spec:
     - metadata:
         name: datadir
       spec:
-        storageClassName: local-path-ssd
+        storageClassName: local-path
         accessModes:
           - ReadWriteOnce
         resources:
