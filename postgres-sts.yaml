@@ -19,10 +19,10 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: kubernetes.io/hostname
+                  - key: node_type
                     operator: In
                     values:
-                      - fire-k3s-master
+                      - 'longhorn'
       securityContext:
         runAsUser: 20002
         runAsGroup: 20002
@@ -62,14 +62,15 @@ spec:
             - mountPath: /var/lib/postgresql/data
               name: datadir
       imagePullSecrets:
-        - name: docker
+        - name: docker-fire
+        - name: docker-quant
   updateStrategy:
     type: RollingUpdate
   volumeClaimTemplates:
     - metadata:
         name: datadir
       spec:
-        storageClassName: local-path
+        storageClassName: longhorn
         accessModes:
           - ReadWriteOnce
         resources:
