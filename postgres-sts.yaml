@@ -36,7 +36,7 @@ spec:
             - name: PGDATA
               value: '/var/lib/postgresql/data/pgdata'
             - name: POSTGRES_INITDB_ARGS
-              value: '--encoding=UTF8 --lc-collate=en_US.UTF-8 --lc-ctype=en_US.UTF-8 -T template0'
+              value: '--encoding=UTF8 --lc-collate=en_US.UTF-8 --lc-ctype=en_US.UTF-8'
             - name: POSTGRES_DB
               value: 'teamvault'
             - name: POSTGRES_USER

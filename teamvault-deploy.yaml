@@ -110,7 +110,7 @@ spec:
                 secretKeyRef:
                   key: salt
                   name: teamvault
-          image: '{{"DOCKER_REGISTRY" | env}}/teamvault:{{"TEAMVAULT_VERSION" | env}}'
+          image: '{{"DOCKER_REGISTRY" | env}}/bborbe/teamvault:{{"TEAMVAULT_VERSION" | env}}'
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
