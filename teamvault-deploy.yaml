@@ -51,6 +51,10 @@ spec:
               value: '(objectClass=groupOfNames)'
             - name: BASE_URL
               value: 'https://teamvault.benjamin-borbe.de'
+            - name: CSRF_TRUSTED_ORIGINS
+              value: 'https://teamvault.benjamin-borbe.de'
+            - name: SECURE_PROXY_SSL_HEADER
+              value: 'HTTP_X_FORWARDED_PROTO,https'
             - name: DATABASE_NAME
               value: 'teamvault'
             - name: DATABASE_HOST
