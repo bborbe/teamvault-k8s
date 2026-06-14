@@ -37,7 +37,7 @@ spec:
                 secretKeyRef:
                   key: ldap-secret
                   name: ldap
-          image: '{{"DOCKER_REGISTRY" | env}}/openldap:{{"LDAP_VERSION" | env}}'
+          image: '{{"DOCKER_REGISTRY" | env}}/bborbe/openldap:{{"LDAP_VERSION" | env}}'
           imagePullPolicy: Always
           ports:
             - containerPort: 389
